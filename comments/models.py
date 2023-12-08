@@ -6,7 +6,7 @@ from django.utils import timezone
 from app_posts.models import AppPost
 from authors.models import Author
 
-baseURL_host = "node-net-46d70235bc29.herokuapp.com"
+baseURL_host = "connection-net-e444016a9ef0.herokuapp.com"
 baseURL = f"https://{baseURL_host}/api"
 
 
