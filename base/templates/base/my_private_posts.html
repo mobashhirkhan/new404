@@ -1,0 +1,87 @@
+{% load static tailwind_tags %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Private Posts</title>
+    {% tailwind_css %} {% load bootstrap5 %} {% bootstrap_css %}
+    {%bootstrap_javascript %} {% load static %}
+    <link rel="shortcut icon" type="image/x-icon" href="{% static 'favicon.ico' %}" >
+  </head>
+  <body>
+    {% include "navbar.html" %}
+    <div class="h-full flex flex-col items-center justify-center mt-4">
+      <div class="card max-w-4xl w-full">
+        <div class="card-header">
+          <h2>My Private Posts</h2>
+        </div>
+        <div class="card-body">
+          <p class="card-text">This section contains your private posts and private posts shared to you.</p>
+        </div>
+      </div>
+      <table
+        class="table table-striped table-hover justify-center max-w-4xl w-full p-8 mt-4"
+        id="myPrivatePosts"
+      >
+        <thead class="thead-dark">
+          <tr>
+            <th scope="col">Private Post Title</th>
+            <th scope="col">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for post in latest_stream %}
+          <tr>
+            {% if post.author == request.user %}
+            <td>{{post.title}}</td>
+            <td>
+              <a href="{% url 'get_post' post.id2 %}" class="text-blue-500"
+                >Open</a
+              >
+              <!--this link name of post to post details-->
+
+              <a href="{% url 'edit_post' post.id2 %}" class="text-blue-500"
+                >Edit</a
+              >
+              <!--this link name of post to edit post details-->
+              <a href="{% url 'del_post' post.id2 %}" class="text-blue-500"
+                >Delete</a
+              >
+            </td>
+            {% endif %}
+          </tr>
+          {% empty %}
+          <td colspan="2" class="text-center py-4">No Posts Available</td>
+          {% endfor %}
+        </tbody>
+      </table>
+      
+      <table
+        class="table table-striped table-hover justify-center max-w-4xl w-full p-8"
+        id="mySharedPrivatePosts"
+      >
+        <thead class="thead-dark">
+          <tr>
+            <th scope="col">Shared Private Post Title</th>
+            <th scope="col">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for post in shared_private_posts %}
+          <tr>
+            <td>{{post.title}}</td>
+            <td>
+              <a href="{% url 'get_post' post.id %}" class="text-blue-500"
+                >Open</a
+              >
+            </td>
+          </tr>
+          {% empty %}
+          <td colspan="2" class="text-center py-4">No Shared Private Posts Available</td>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,105 @@
+{% load static tailwind_tags %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{thispost.title}}</title>
+    {% tailwind_css %} {% load bootstrap5 %} {% bootstrap_css %}
+    {%bootstrap_javascript %} {% load static %}
+    <link rel="shortcut icon" type="image/x-icon" href="{% static 'favicon.ico' %}" >
+  </head>
+  <body class="" style="background-image: linear-gradient(to right bottom,rgba(250, 172, 172, 0.8), rgba(84, 180, 177, 0.88), rgba(253, 228, 160, 0.88)); background-attachment:fixed">
+    {% include "navbar.html" %}
+    <div class="flex items-center justify-center h-full mt-4 mb-4">
+      <div
+        class="max-w-3xl w-full p-4 bg-white rounded-lg shadow-md flex-shrink-0"
+      >
+        <a
+          href="{% url 'stream' %}"
+          class="text-blue-500 hover:underline mb-4 inline-block"
+          >Back to stream</a
+        >
+        <h1 class="text-2xl font-bold">
+          Post title: {{ thispost.title }} made by {{thispost.author.username}}
+        </h1>
+        <h5 class="text-sm text-gray-600 mb-4">{{ thispost.description }}</h5>
+        <a href="{% url 'post_like' thispost.id2 %}">Like post</a>
+        <span class="ml-2 text-gray-600">{{ thispost.liked.count }}</span>
+        {% if thispost.contentType|lower == 'image/png;base64' or thispost.contentType|lower == 'image/jpeg;base64' %}
+        <img
+          src="{{ thispost.image.url }}"
+          class="mt-4"
+          width="300"
+          height="300"
+        />
+        {% elif thispost.contentType|lower == 'hyperlink' %}
+        <script>
+          var val = "{{thispost.content}}";
+          let loc = val;
+          document.write('<a href="' + loc + '"> your image </a>');
+        </script>
+    <!-- {% elif thispost.contentType|lower == 'image/png;base64' or
+    thispost.contentType|lower == 'image/jpeg;base64' %}
+    <img src="{{thispost.content}}" class="mt-4" width="300" height="300" /> -->
+
+    {% else %} {% if thispost.contentType|lower == 'markdown' %}
+    <div class="mt-4 markdown-style">
+      <!-- markdown post -->
+      {{ thispost.contentMarkdown|safe }}
+    </div>
+    {% elif thispost.contentType|lower == 'plain' %}
+    <div class="mt-4 plain-post-style">
+      <!-- plain post -->
+      {{ thispost.contentPlain|safe }}
+    </div>
+    {% endif %} {% endif %}
+
+    <ul class="mt-4">
+      <li>{{ thispost.visibility }}</li>
+    </ul>
+
+    <h2 class="text-lg font-semibold mt-6">Comments</h2>
+    {% if comments %}
+    <ul class="list-disc ml-6 mt-4">
+        {% for comment in comments %}
+        <br>
+            <li class="">
+                <div>
+                    {% if comment.contentType|lower == 'plain' %}
+                        <p class="text-base">{{ comment.contentPlain|safe }}</p>
+                    {% elif comment.contentType|lower == 'markdown' %}
+                        <p class="text-base">{{ comment.contentMarkdown|safe }}</p>
+                    {% endif %}
+                    <p class="text-sm text-gray-500">By {{ comment.author.username }}</p>
+                    <a href="{% url 'comment_like' thispost.id2 comment.id2 %}" class="text-blue-500 hover:underline">Like</a>
+                    <span class="ml-2 text-gray-600">{{ comment.liked.count }}</span>
+
+                    {% if comment.author == request.user %}
+                        <div class="mt-2">
+                            <a href="{% url 'comment_edit' thispost.id2 comment.id2 %}" class="text-green-500 mr-4 hover:underline">Edit</a>
+                            <a href="{% url 'comment_delete' thispost.id2 comment.id2 %}" class="text-red-500 hover:underline">Delete</a>
+                        </div>
+                    {% endif %}
+                </div>
+            </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p>No comments yet.</p>
+    {% endif %} {% if not form %}
+    <a href="{% url 'comment_display' thispost.id2 %}">Write a comment</a>
+    {% else %}
+    <form action="" method="POST">
+      {% csrf_token %} {% bootstrap_form form %}
+      <input
+              type="submit"
+              value="Post the Comment"
+              class="bg-blue-500 text-white px-4 py-2 rounded-md mt-4 block w-full"
+      />
+    </form>
+    {% endif %}
+  </div>
+</div>
+</body>
+</html>

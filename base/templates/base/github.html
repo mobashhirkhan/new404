@@ -1,0 +1,52 @@
+{% load static tailwind_tags %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitHub Activity</title>
+    {% tailwind_css %} {% load bootstrap5 %} {% bootstrap_css %}
+    {%bootstrap_javascript %} {% load static %}
+    <link rel="shortcut icon" type="image/x-icon" href="{% static 'favicon.ico' %}" >
+</head>
+<body>
+    {% include "navbar.html" %}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col">
+              </div>
+            <div class="col-8">
+                <div id="main" class="h-full flex flex-col items-center justify-center">
+                    <div class="max-w-4xl w-full p-8">
+                        <h1>GitHub Activity for {{ request.user }}</h1>
+                        <div class="card text-left mb-4" id="cardContainer" style="background-color: white; border-radius:1%">
+                            {% if error %}
+                                <p>{{ error }}</p>
+                            {% else %}
+                                <ul>
+                                    {% for event in github_data %}
+                                        <li>
+                                            <strong>{{ event.type }}</strong> - {{ event.created_at }}
+                                            <ul>
+                                                {% if event.actor %}
+                                                    <li><strong>Actor:</strong> {{ event.actor.login }}</li>
+                                                {% endif %}
+                                                {% if event.repo %}
+                                                    <li><strong>Repository:</strong> {{ event.repo.name }}</li>
+                                                {% endif %}
+                                                <!-- Add more details as needed -->
+                                            </ul>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+            </div>
+        </div>
+    </div>
+</body>
+</html>

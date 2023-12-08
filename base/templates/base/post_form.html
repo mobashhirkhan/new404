@@ -1,0 +1,103 @@
+{% load static tailwind_tags %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Post</title>
+    {% tailwind_css %}
+    {% load bootstrap5 %}
+    {% bootstrap_css %}
+    {% bootstrap_javascript %} {% load static %}
+    <link rel="shortcut icon" type="image/x-icon" href="{% static 'favicon.ico' %}" >
+</head>
+<body>
+{% include "navbar.html" %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="p-2 card bg-white rounded-md shadow-md max-h-screen overflow-y-auto">
+                    <div class="card max-w-4xl w-full">
+                    <div class="card-header">
+                        <h3 class="text-xl font-semibold mb-2">Add A Post</h3>
+                        <small>
+                            Posts, the heart of Nodenet, are the primary way to share content with other authors.
+                        </small>
+                        <br>
+                        <a href="{% url 'stream' %}" class="text-blue-500 hover:underline inline-block">Cancel</a>
+                    </div>
+                    <div class="card-body">
+                        <form method="POST" action="" class="form-group" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {% bootstrap_field post_form.title %}
+                    {% bootstrap_field post_form.description %}
+                    {% bootstrap_field post_form.contentType %}
+                    {% bootstrap_field post_form.content %}
+                    {% bootstrap_field post_form.categories %}
+                    {% bootstrap_field post_form.visibility %}
+                    {% bootstrap_field post_form.unlisted %}
+
+                    <div id="imageContainer" style="display: none;">
+                        {% bootstrap_field post_form.image %}
+                    </div>
+
+                    <div id="friendsToNotifyContainer" style="display: none;">
+                        {% bootstrap_field post_form.friends_to_notify %}
+                    </div>
+                    <input type="submit" value="POST" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600" />
+                     </form>
+                    </div>
+                    </div>
+
+
+                <script>
+                        document.addEventListener('DOMContentLoaded', function () {
+                        const contentSelect = document.querySelector('#id_contentType');
+                        // const imageUpload = document.querySelector('#id_image');
+
+                        // Function to toggle visibility of image upload field
+                        function toggleImageUploadField() {
+                            const selectedType = contentSelect.value;
+                            //imageUpload.style.display = (selectedType === 'image/png;base64' || selectedType === 'image/jpeg;base64') ? 'block' : 'none';
+                            imageContainer.style.display = (selectedType === 'image/png;base64' || selectedType === 'image/jpeg;base64') ? 'block' : 'none';
+                        }
+
+                        // Initial toggle
+                        toggleImageUploadField();
+
+                        // Event listener for changes in content type
+                        contentSelect.addEventListener('change', toggleImageUploadField);
+
+
+
+
+
+<!--                        const friendsToNotifyField = document.querySelector('#id_friends_to_notify');-->
+
+                        // Function to toggle visibility of Friends to Notify field
+                        function toggleFriendsToNotifyField() {
+                            const selectedVisibility = document.querySelector('#id_visibility').value;
+                            console.log('Selected Visibility:', selectedVisibility);
+                            console.log('Friends To Notify Field:', friendsToNotifyContainer);
+
+                            // Check if the selected visibility is 'PRIVATE'
+                            if (selectedVisibility === 'PRIVATE') {
+                                friendsToNotifyContainer.style.display = 'block';
+                            } else {
+                                friendsToNotifyContainer.style.display = 'none';
+                            }
+                        }
+
+                        // Initial toggle
+                        toggleFriendsToNotifyField();
+
+                        // Event listener for changes in visibility
+                        document.querySelector('#id_visibility').addEventListener('change', toggleFriendsToNotifyField);
+                    });
+                </script>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

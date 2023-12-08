@@ -1,0 +1,63 @@
+{% load custom_filters %}
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <a
+    class="navbar-brand text-3xl font-bold"
+    id="myProfile"
+    href="{% url 'stream' %}"
+    >{{request.user}}</a
+  >
+  <div class="navbar-nav">
+    <a class="nav-link active" aria-current="page" href="{% url 'stream' %}"
+      >Stream</a
+    >
+    <a
+      class="nav-link active"
+      aria-current="page"
+      href="{% url 'private_posts' %}"
+      >Private posts</a
+    >
+    <a class="nav-link active" aria-current="page" href="{% url 'friends_posts' %}">Friends posts</a>
+    <a
+      class="nav-link active"
+      aria-current="page"
+      href="{% url 'author_followers' request.user.id2 %}"
+      >Followers</a
+    >
+
+    <a
+      class="nav-link active"
+      aria-current="page"
+      href="{% url 'author_inbox' request.user.id2 %}"
+      >Inbox</a
+    >
+    <a
+      class="nav-link active"
+      aria-current="page"
+      href="{% url 'authors' %}"
+      >Authors</a
+    >
+    <a
+      class="nav-link active"
+      aria-current="page"
+      href="{% url 'unlisted_posts' %}"
+      >Unlisted</a
+    >
+    <a class="nav-link active" aria-current="page" href="{% url 'new_post' %}"
+      >New</a
+    >
+  </div>
+  <div class="d-flex ms-auto navbar-nav">
+    <a
+      class="nav-link active"
+      aria-current="page"
+      href="{% url 'get_author' request.user.id2 %}"
+      >Profile</a
+    >
+    <a class="nav-link active" aria-current="page" href="{% url 'logout' %}"
+      >Logout</a
+    >
+  </div>
+</nav>
+</html>
+

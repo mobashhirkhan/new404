@@ -1,0 +1,271 @@
+{% load static tailwind_tags %}
+{% load custom_filters %}
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Nodenet</title>
+    {% tailwind_css %} {% load bootstrap5 %} {% bootstrap_css %}
+    {%bootstrap_javascript %} {% load static %}
+    <link rel="shortcut icon" type="image/x-icon" href="{% static 'favicon.ico' %}" >
+  </head>
+
+  <body style="background-image: linear-gradient(to right bottom,rgba(251, 222, 222, 0.8), rgba(217, 245, 244, 0.88), rgba(249, 241, 217, 0.88)); background-attachment:fixed">
+    {% include "navbar.html" %}
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col">
+        </div>
+        <div class="col-8">
+          <div id="main" class="h-full flex flex-col items-center justify-center">
+            <div class="max-w-4xl w-full p-8">
+              <div class="container mx-auto mt-8">
+                <div class="card">
+                  <h1 class="text-4xl card-header">NodeNet</h1>
+                  <div class="card-body">
+                    <h3 class="card-title">Welcome to Nodenet Stream</h3>
+                    <p class="card-text">Here you will find public posts on local and foreign servers and your own posts</p>
+                  </div>
+                  <div class="card-footer">
+                    <button id="getter" onclick="buttonFunction()" class="btn btn-outline-success">Foreign Authors Posts</button>
+                  </div>
+                </div>
+                {% for post in latest_stream %}
+                <div class="card text-left mb-4 mt-4" id="cardContainer">
+                  <div class="card-header">
+                    <div class="font-bold text-2xl">{{ post.title }}</div>
+                    <span class="ml-2 text-gray-600">Like count: {{ post.liked.count }}</span>
+                    <div class="">
+                      {% if post.author == request.user %}
+                      <a href="{% url 'edit_post' post.id2 %}" class="text-blue-500"
+                        >Edit</a
+                      >
+                      <a href="{% url 'del_post' post.id2 %}" class="text-red-500"
+                        >Delete</a
+                      >
+                      {% endif %}
+                    </div>
+                  </div>
+                  <div class="card-body">
+                    <h5 class="card-title">{{ post.description }}</h5>
+                    <p class="card-text">
+                      {% if post.contentType|lower == 'hyperlink' %}
+                      <script>
+                        var val = "{{post.content}}";
+                        let loc = val;
+                        document.write('<a href="' + loc + '"> your image </a>');
+                      </script>
+                      {% elif post.contentType == 'image/png;base64' or post.contentType == 'image/jpeg;base64'%}
+                      <img
+                        src="{{post.image.url}}"
+                        class="mt-4"
+                        width="300"
+                        height="300"
+                      />
+                      {% else %} {% if post.contentType|lower == 'markdown' %}
+                    </p>
+                    <div class="mt-4 markdown-style">
+                      {{ post.contentMarkdown|safe }}
+                    </div>
+                    {% elif post.contentType|lower == 'plain' %}
+                    <div class="mt-4 plain-post-style">
+                      {{ post.contentPlain|safe }}
+                    </div>
+                    {% endif %} {% endif %}
+                  </div>
+                  <div class="card-footer">
+                    <h5>Comments</h5>
+                    <div id="commentList">
+                      {% for comment in post.comments_list %}
+                      <div class="card mb-4">
+                        <div class="card-header">
+                          Published on {{comment.published}}
+                          <div id="commentoptions">
+                            {% if comment.author == request.user %}
+                            <a href="{% url 'comment_edit' post.id2 comment.id2 %}"
+                              >Update Comment</a
+                            >
+                            <a href="{% url 'comment_delete' post.id2 comment.id2 %}"
+                              >Delete Comment</a
+                            >
+                            {% endif %}
+                          </div>
+                        </div>
+                        <div class="card-body">
+                          <blockquote class="blockquote mb-0">
+                            {% if comment.contentType|lower == 'plain' %}
+                            <p>{{comment.contentPlain|safe }}</p>
+                            {% elif comment.contentType|lower == 'markdown' %}
+                            <p>{{comment.contentMarkdown|safe }}</p>
+                            {% endif %}
+                            <footer class="blockquote-footer">
+                              {{ comment.author}}
+                            </footer>
+                          </blockquote>
+                        </div>
+                      </div>
+                      {% endfor %}
+
+                    </div>
+                    <a href="{% url 'comment_display' post.id2 %}">Write a comment</a>
+                    <a href="{% url 'post_like' post.id2 %}">Like post</a>
+                  </div>
+
+                  <!-- add a textbox to add a comment for a post here -->
+                </div>
+                {% endfor %} {% if latest_stream|length == 0 %}
+                <div class="card mt-4">
+                  <div class="card-header">
+                    No Posts for Now! Add Some Yourself!
+                  </div>
+                  <div class="card-body">
+                    <blockquote class="blockquote mb-0">
+                      <p>Accomplishment will prove to be a journey, not a destination.</p>
+                      <footer class="blockquote-footer">Dwight D. Eisenhower</footer>
+                    </blockquote>
+                  </div>
+                </div>
+                {% endif %}
+
+
+                <!-- get their authors posts-->
+
+                <ul id="postsList"></ul>
+                <script>
+                  var credentials = "node-scripted-team:node-scripted-team";
+                  var base64Credentials = btoa(credentials);
+
+                  function buttonFunction() {
+                    var xhr = new XMLHttpRequest();
+                    //var url = "https://netninjas-backend-181348e5439b.herokuapp.com/api/authors";
+                    var url = "127.0.0.1:8000/api/authors";
+
+                    xhr.onreadystatechange = function () {
+                      if (xhr.readyState == 4 && xhr.status == 200) {
+                        var authors = JSON.parse(xhr.responseText);
+                        console.log(authors);
+                        getPostsForAuthors(authors.items);
+                      }
+                    };
+                    xhr.open("GET", url, true);
+                    xhr.setRequestHeader("Authorization", "Basic " + base64Credentials);
+                    xhr.send();
+                  }
+
+                  function getPostsForAuthors(authors) {
+                    authors.forEach(function (author) {
+                      var xhr = new XMLHttpRequest();
+                      //var postsUrl = `https://netninjas-backend-181348e5439b.herokuapp.com/api/authors/${getLastPartOfUrl(author.id)}/posts`;
+                      var postsUrl = `127.0.0.1:8000/api/authors/${getLastPartOfUrl(author.id)}/posts`;
+
+                      xhr.onreadystatechange = function () {
+                        if (xhr.readyState == 4) {
+                          if (xhr.status == 200) {
+                            try {
+                              var posts = JSON.parse(xhr.responseText);
+                              if (Array.isArray(posts)) {
+                                // Check if the response is an array of posts
+                                displayPosts(author.displayName, posts);
+                              } else {
+                                console.error(`Error getting posts for ${author.displayName}: Invalid response format`);
+                              }
+                            } catch (error) {
+                              console.error(`Error parsing response for ${author.displayName}: ${error}`);
+                            }
+                          } else if (xhr.status == 404) {
+                            console.warn(`No posts found for ${author.displayName}`);
+                          } else {
+                            console.error(`Error getting posts for ${author.displayName}: ${xhr.status}: ${xhr.statusText}`);
+                          }
+                        }
+                      };
+
+                      xhr.open("GET", postsUrl, true);
+                      xhr.setRequestHeader("Authorization", "Basic " + base64Credentials);
+                      xhr.send();
+                    });
+                  }
+
+                function displayPosts(authorName, posts) {
+                  console.log(`${authorName}: Posts`, posts);
+
+                  var postsList = document.getElementById("postsList");
+
+                  //only public and plain
+                  posts.forEach(function (post) {
+                    if (post && post.visibility === "PUBLIC" && post.contentType === "text/plain") {
+                      var listItem = document.createElement("li");
+
+                      if (post.author && post.author.host !== "your-local-host-url") {
+                        listItem.className = "card text-left mb-4 foreign-post";
+                      } else {
+                        listItem.className = "card text-left mb-4 local-post";
+                      }
+
+                      var cardHeader = document.createElement("div");
+                      cardHeader.className = "card-header";
+
+                      // Display Foreign label beside the title for foreign posts
+                      var titleLabel = document.createElement("div");
+                      titleLabel.className = "font-bold text-2xl";
+                      var titleText = post.title || "-";
+                      titleLabel.appendChild(document.createTextNode(titleText));
+
+                      // Display author's displayName
+                      var authorDisplayName = document.createElement("div");
+                      authorDisplayName.className = "font-bold text-2xl";
+                      var displayNameText = post.author ? (post.author.displayName || "-") : "-";
+                      authorDisplayName.appendChild(document.createTextNode(displayNameText));
+
+                      // Display content(only plain for now)
+                      var content = document.createElement("div");
+                      content.className = "card-body";
+                      var contentText = post.content || "-";
+                      content.appendChild(document.createTextNode(contentText));
+
+                      // Display like count
+                      var likeCount = document.createElement("div");
+                      likeCount.className = "card-footer";
+                      var likeCountText = post.count || "-";
+                      likeCount.appendChild(document.createTextNode(`Likes: ${likeCountText}`));
+
+                      // Append elements to build the card structure
+                      cardHeader.appendChild(titleLabel); // Include title label in the header
+                      cardHeader.appendChild(authorDisplayName);
+                      listItem.appendChild(cardHeader);
+                      listItem.appendChild(content);
+                      listItem.appendChild(likeCount);
+
+                      postsList.appendChild(listItem);
+                    }
+                  });
+                }
+
+
+                  // Helper function to get the last part of a URL
+                  function getLastPartOfUrl(url) {
+                    var urlParts = url.split('/');
+                    return urlParts[urlParts.length - 1];
+                  }
+                  window.onload = function () {
+                      buttonFunction();
+                  };
+                </script>
+
+
+
+              </div>
+
+
+              <br />
+            </div>
+          </div>
+        </div>
+        <div class="col">
+        </div>  
+  </body>
+</html>
+
+<!-- Modal -->

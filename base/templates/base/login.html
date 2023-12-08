@@ -1,0 +1,39 @@
+{% load static tailwind_tags %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login</title>
+    {% tailwind_css %} {% load bootstrap5 %} {% bootstrap_css %}
+    {%bootstrap_javascript %} {% load static %}
+    <link rel="shortcut icon" type="image/x-icon" href="{% static 'favicon.ico' %}" >
+  </head>
+  <body class="flex items-center justify-center h-screen">
+      <div class="max-w-md w-full p-6 bg-white rounded-md shadow-md"> 
+        <div class="flex justify-center items-center">
+          <img src= "{% static 'logo.png' %}" class="img-fluid" width="90pt" margin="10pt" style="border-radius: 20%;">
+        </div>
+
+      <h1 class="text-2xl mb-4 ">Login</h1>
+
+      <form method="POST" class="text-left">
+        {% csrf_token %} 
+        {% bootstrap_form form %}
+        <div class="form-group">
+          <input
+            type="submit"
+            value="Login"
+            class="bg-blue-500 text-white px-4 py-2 rounded-md mt-4 block w-full"
+          />
+        </div>
+      </form>
+
+      <p class="mt-4">
+        No Account? <a href="{% url 'register' %}"> Get In The Net!</a>
+      </p>
+    </div>
+  </body>
+  <body class="bg-image" style= "background-image: url('https://wallpapers.com/images/hd/hd-rain-in-the-sea-9y4gtl014id970fm.jpg');">
+  </body>
+</html>

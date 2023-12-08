@@ -1,0 +1,24 @@
+{% load static tailwind_tags %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Update Comment</title>
+    {% tailwind_css %} {% load bootstrap5 %} {% bootstrap_css %}
+    {%bootstrap_javascript %} {% load static %}
+    <link rel="shortcut icon" type="image/x-icon" href="{% static 'favicon.ico' %}" >
+  </head>
+  <body class="flex justify-center items-center h-screen">
+    <form action="" method="POST">
+      {% csrf_token %} {% bootstrap_form form %}
+      <input
+        type="submit"
+        value="Update the Comment"
+        class="bg-blue-500 text-white px-4 py-2 rounded-md mt-4 block w-full"
+      />
+    </form>
+  </body>
+  <body class="bg-image" style= "background-image: url('https://wallpapers.com/images/hd/hd-rain-in-the-sea-9y4gtl014id970fm.jpg'); background-attachment:fixed">
+  </body>
+</html>

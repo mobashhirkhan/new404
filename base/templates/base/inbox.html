@@ -1,0 +1,97 @@
+{% load static tailwind_tags %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Nodenet Inbox</title>
+    {% tailwind_css %} {% load bootstrap5 %} {% bootstrap_css %}
+    {% bootstrap_javascript %} {% load static %}
+    <link rel="shortcut icon" type="image/x-icon" href="{% static 'favicon.ico' %}" >
+    <style>
+        /* Add your custom styles here */
+        body {
+            padding: 0;/* Adjusted to accommodate the fixed navbar */
+        }
+        .update-card {
+            margin-bottom: 1rem;
+            padding: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    {% include "navbar.html" %}
+    <div class="h-full flex flex-col items-center justify-center mt-4">
+    <div class="card max-w-4xl w-full">
+    <div class="card-header">
+        <h2>Your Inbox</h2>
+    </div>
+    <div class="card-body">
+        <p class="card-text">Likes, comments, public, private and friend posts go here.</p>
+    </div>
+    </div>
+    </div>
+    <div class="container mt-4 max-w-4xl">
+        {% if items %}
+            {% for item in items %}
+                <div class="update-card">
+                    {% if item.type == "Post" %}
+                    <div class="card">
+                        <div class="card-header">
+                            <h2>Post notification</h2>
+                        </div>
+                        <div class="card-body">
+                            <blockquote class="blockquote mb-0">
+                            <p>A private post title <strong>{{ item.title }}</strong> has been shared with you</p>
+                            <p>Go to <span><a class="active" aria-current="page" href="{% url 'private_posts' %}">your private posts</a></span> to view it</p>
+                            </blockquote>
+                        </div>
+                    </div>
+                    {% elif item.type == "Like" %}
+                    <div class="card">
+                        <div class="card-header">
+                            <h2>Like notification</h2>
+                        </div>
+                        <div class="card-body">
+                            <blockquote class="blockquote mb-0">
+                            <p><strong>{{ item.summary }}</strong></p>
+                            </blockquote>
+                        </div>
+                    </div>
+                    {% elif item.type == "Comment" %}
+                    <div class="card">
+                        <div class="card-header">
+                            <h2>Comment notification</h2>
+                        </div>
+                        <div class="card-body">
+                            <blockquote class="blockquote mb-0">
+                            <p><strong>{{ item.summary }}</strong></p>
+                            </blockquote>
+                        </div>
+                    </div>
+                    {% elif item.type == "Request" %}
+                    <div class="card">
+                        <div class="card-header">
+                            <h2>Follow Request</h2>
+                        </div>
+                        <div class="card-body">
+                            <blockquote class="blockquote mb-0">
+                            <p><strong>{{ item.fromAuthor.displayName }}</strong> started following you!</p>
+                            <p>Go to <span><a class="active" aria-current="page" href="{% url 'author_followers' request.user.id2 %}">followers</a></span> to follow them back!</p>
+                            </blockquote>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="alert alert-secondary text-center ">
+                <h2>No Updates Yet!</h2>
+            </div>
+        {% endif %}
+    </div>
+    
+</body>
+</html>

@@ -1,0 +1,39 @@
+{% load static tailwind_tags %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Edit Profile</title>
+    {% tailwind_css %} {% load bootstrap5 %} {% bootstrap_css %}
+    {%bootstrap_javascript %} {% load static %}
+    <link rel="shortcut icon" type="image/x-icon" href="{% static 'favicon.ico' %}" >
+  </head> 
+  <body>
+    {% include "navbar.html" %}
+    <div class="flex items-center justify-center h-screen">
+    {% if allowed %}
+    <div class="max-w-md w-full p-6 bg-white rounded-md shadow-md">
+      <h1 class="text-2xl mb-4">Edit Your Profile</h1>
+
+      <form method="POST">
+        {% csrf_token %} {% bootstrap_form author_form %}
+        <input
+          type="submit"
+          value="Edit"
+          class="bg-blue-500 text-white px-4 py-2 rounded-md mt-4 block w-full"
+        />
+      </form>
+    </div>
+    </div>
+    {% else %}
+    {% if error %}
+    <h3> The user already exists. </h3>
+    <a href="{% url 'get_author' profileid %}">Back to the profile</a>
+    {% else %}
+    <h3>You are not allowed to edit this profile.</h3>
+    <a href="{% url 'get_author' profileid %}">Back to the profile</a>
+    {% endif %}
+    {% endif %}
+  </body>
+</html>

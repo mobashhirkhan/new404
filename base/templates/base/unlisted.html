@@ -1,0 +1,45 @@
+{% load static tailwind_tags %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Unlisted Posts</title>
+  {% tailwind_css %} {% load bootstrap5 %} {% bootstrap_css %}
+  {%bootstrap_javascript %} {% load static %}
+  <link rel="shortcut icon" type="image/x-icon" href="{% static 'favicon.ico' %}" >
+</head>
+<body>
+  {% include "navbar.html" %}
+  <div class="h-full flex flex-col items-center justify-center mt-4">
+  <div class="card max-w-4xl w-full">
+    <div class="card-header">
+        <h2>Unlisted Posts</h2>
+    </div>
+    <div class="card-body">
+        <p class="card-text">Unlisted posts are public posts that are only accessible by a URL referral.</p>
+    </div>
+  </div>  
+  {% for post in latest_stream %}
+  {% if request.user == post.author %}
+  <div class="card max-w-4xl mt-4 mb-2 w-full">
+      <div class="card-header">
+        <h3 class="text-xl font-semibold mb-2">{{ post.title }}</h3>
+        <small>
+          {{ post.author }} on {{ post.published }}
+        </small>
+      </div>
+      <div class="card-body">
+        <p class="card-text">{{ post.description }}</p>
+        <p class="card-text">{{ post.content }}</p>
+      </div>
+      <div class="card-footer">
+        <a href="{% url 'get_post' post.id2 %}" class="btn btn-secondary w-full">View Post</a>
+      </div>
+    </div>
+    {% endif %}
+    {% endfor %}
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,15 @@
+3<h1> Following These Cool guys </h1>
+
+<table>
+    {% for author in following %}
+    <tr>
+        <td>{{author.username}}</td>
+        <td>
+            <a href="{% url 'get_author' author.id2 %}"> View Profile </a> <!--this link name of follower to follower details-->
+            <a href="{% url 'unfollow_author' author.id2 %}"> Unfollow </a> <!--this link name of follower to follower details-->
+        </td>
+    </tr>
+    {% empty %}
+    <h3>You are following no one.</h3>
+    {% endfor %}
+</table>

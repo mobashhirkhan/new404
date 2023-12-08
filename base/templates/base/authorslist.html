@@ -1,0 +1,221 @@
+{% load static tailwind_tags %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Nodenet</title>
+  {% tailwind_css %} {% load bootstrap5 %} {% bootstrap_css %}
+  {% bootstrap_javascript %}
+</head>
+<body>
+{% include "navbar.html" %}
+<div class="h-full flex flex-col items-center justify-center mt-4">
+    <div class="card max-w-3xl w-full">
+    <div class="card-header">
+        <h2>The Auspicious Authors of NodeNet</h2>
+    </div>
+    <div class="card-body">
+        <p class="card-text">All registered authors on the current local server can be found here.</p>
+    </div>
+    <div class="card-footer">
+        <button id="getter"
+          onclick="buttonFunction()"
+          class="bg-blue-500 text-white px-4 py-2 rounded-md w-full inline-block transition duration-300 ease-in-out hover:bg-blue-600 hover:text-white hover:shadow-md">Foreign Authors</button>
+    </div>
+    </div>
+</div>
+<div class="mx-auto mt-10 p-4 max-w-screen-md overflow-y-auto h-full flex flex-col items-center justify-center">
+  <!-- Local Authors Table -->
+  <table class="table table-hover table-bordered mt-4 table-light table-striped table-sm table-responsive" style="width: 50%">
+    <tr>
+      <!--table row-->
+      <th scope="col">Username</th>
+      <!--table header-->
+    </tr>
+
+    {% for author in authors %}
+    {% if author != request.user %}
+    <tr>
+      <td>{{author.username}}</td>
+      <td>
+        <a href="{% url 'get_author' author.id2 %}"> View Profile</a>
+        <!--this link name of post to post details-->
+        {% if author not in following %} {% if author not in friends %} {% if author not in followers %}
+        <a href="{% url 'befriend_author' author.id2 %}"> Befriend </a>
+        {% endif %} {% endif %} {% endif %}
+        <!--this link name of post to edit post details-->
+      </td>
+    </tr>
+    {% endif %}
+    {% empty %}
+    <h3>No Posts Available</h3>
+    {% endfor %}
+  </table>
+
+  <!-- Foreign Authors Table -->
+  <ul id="authorList"></ul>
+</div>
+<script>
+
+    var ourCredentials = "Nodenet:Nodenet";
+    var base64OurCredentials = btoa(ourCredentials);
+
+    var credentials = "node-scripted-team:node-scripted-team";
+    var base64Credentials = btoa(credentials);
+
+    function buttonFunction() {
+        var xhr = new XMLHttpRequest();
+        //var url = "https://netninjas-backend-181348e5439b.herokuapp.com/api/authors";
+        var url = "127.0.0.1:8000/api/authors"
+
+        xhr.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                var authors = JSON.parse(this.responseText);
+                //console.log(authors.items);
+                displayAuthors(authors.items);
+            }
+        };
+        xhr.open("GET", url, true);
+        xhr.setRequestHeader("Authorization", "Basic " + base64Credentials);
+        xhr.send();
+    }
+
+    function displayAuthors(authors) {
+      var authorList = document.getElementById("authorList");
+
+      // Create a table for foreign authors
+      var foreignAuthorsTable = document.createElement("table");
+      foreignAuthorsTable.className = "table table-hover table-bordered table-light table-striped table-sm table-responsive";
+      foreignAuthorsTable.style.width = "100%"; // Use 100% width for responsiveness
+      foreignAuthorsTable.innerHTML = "<tr><th scope='col'>Username</th><th scope='col'></th></tr>";
+
+      authors.forEach(function (author) {
+        var listItem = document.createElement("tr");
+
+        var usernameCell = document.createElement("td");
+        usernameCell.className = "list-group-item";
+        usernameCell.style.width = "70%"; // Set the width for the username column
+        usernameCell.style.borderRight = "1px solid #dee2e6"; // Add right border
+
+        var username = document.createElement("div");
+        username.textContent = author.username;
+        usernameCell.appendChild(username);
+
+        var emptyCell = document.createElement("td"); // Empty column
+        emptyCell.style.width = "30%"; // Set the width for the empty column
+        emptyCell.style.textAlign = "right"; // Align content to the right
+        emptyCell.style.padding = "8px"; // Adjust padding for better spacing
+
+        // Add "Befriend" button
+        var befriendButton = document.createElement("button");
+        befriendButton.className = "btn btn-primary"; // You can adjust the class based on your styling
+        befriendButton.textContent = "Befriend";
+        befriendButton.addEventListener("click", function () {
+          // Handle the befriending action here
+          sendRequest(author);
+        });
+
+        emptyCell.appendChild(befriendButton);
+
+        listItem.appendChild(usernameCell);
+        listItem.appendChild(emptyCell);
+
+        // Append the list item to the foreign authors table
+        foreignAuthorsTable.appendChild(listItem);
+      });
+
+      // Append the foreign authors table to the authorList
+      authorList.appendChild(foreignAuthorsTable);
+    }
+
+
+
+    function currentAuthor(){
+      var localAuthor = {
+        "type":"author",
+        "id":"{{ request.user.id }}",
+        "host":"{{ request.user.host }}",
+        "displayName":"{{ request.user.username }}",
+        "url":"{{ request.user.url }}",
+        "github": "{{ request.user.github }}",
+        "profileImage": ""
+      };
+      return localAuthor;
+    }
+    function jsonAuthor(author){
+      return JSON.stringify(author);
+    }
+    async function sendRequest(toAuthor) {
+      try {
+          //var fromAuthor = currentAuthor();
+          var fromAuthor = {
+            "type":"author",
+            "id":"test"
+
+          };
+
+          var theirCredentials = "Nodenet:Nodenet";
+          var ourCredentials = "Nodenet:Nodenet";
+
+
+          // URL for sending follow request to inboxes
+          var theirUrl = `${toAuthor.id}/inbox`;
+          var ourUrl = `${fromAuthor.id}/inbox`;
+
+
+          var follow = {
+              "type": "Follow",
+              "summary": "",
+              "actor": fromAuthor,
+              "object": toAuthor
+          };
+
+          console.log(follow);
+          console.log(ourUrl);
+          console.log(theirUrl);
+
+          await sendFollowRequest(ourUrl, ourCredentials, follow); // to us
+          await sendFollowRequest(ourUrl, ourCredentials, follow); //
+
+          //await sendFollowRequest(theirUrl, theirCredentials, follow); // to them
+
+          console.log("Both follow requests sent successfully");
+      } catch (error) {
+          console.error("Error sending follow requests:", error);
+      }
+    }
+
+    async function sendFollowRequest(url, cred, follow) {
+      try {
+          const response = await fetch(url, {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': `Basic ${btoa(cred)}`
+              },
+              body: JSON.stringify(follow)
+          });
+
+          if (!response.ok) {
+              throw new Error(`Error sending follow request. Status: ${response.status}, Status Text: ${response.statusText}`);
+          }
+
+          console.log("Sent request");
+      } catch (error) {
+          console.error(error);
+          throw error; // Re-throw the error to propagate it up the chain
+      }
+    }
+    // Helper function to get the last part of a URL
+    function getLastPartOfUrl(url) {
+      var urlParts = url.split('/');
+      return urlParts[urlParts.length - 1];
+    }
+    window.onload = function () {
+        buttonFunction();
+    };
+</script>
+
+</body>
+</html>

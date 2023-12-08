@@ -1,0 +1,42 @@
+{% load static tailwind_tags %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Choose Friends to Share</title>
+  {% tailwind_css %} {% load bootstrap5 %} {% bootstrap_css %}
+  {%bootstrap_javascript %} {% load static %}
+  <link rel="shortcut icon" type="image/x-icon" href="{% static 'favicon.ico' %}" >
+</head>
+<body>
+  {% include "navbar.html" %}
+  <div class="h-full flex flex-col items-center justify-center">
+    <h3 class="justify-left">Choose Friends to Share Selected Post with!</h3>
+    <form method="POST" action="" class="max-w-4xl w-full p-8">
+    {% csrf_token %}
+
+    <table class="table table-striped table-hover justify-center max-w-4xl w-full p-8">
+      <thead class="thead-dark">
+        <tr>
+          <th scope="col">Select</th>
+          <th scope="col">Friend</th>
+        </tr>
+      </thead>
+      {% for friend in friends %}
+      <tr>
+        <td><input type="checkbox" name="selected_friends" value="{{ friend.id }}" /></td>
+        <td>{{ friend.username }}</td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="3"><h3>No Friends</h3></td>
+      </tr>
+      {% endfor %}
+    </table>
+
+    <input type="submit" value="Share" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 w-full" />
+  </form>
+  </div>
+</body>
+</html>

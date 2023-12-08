@@ -1,0 +1,89 @@
+{% load static tailwind_tags %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{author}}'s Profile</title>
+    {% tailwind_css %} {% load bootstrap5 %} {% bootstrap_css %}
+    {%bootstrap_javascript %} {% load static %}
+    <link rel="shortcut icon" type="image/x-icon" href="{% static 'favicon.ico' %}" >
+  </head>
+  <body>
+    {% include "navbar.html" %}
+    <div class="m-4" id="container">
+      <div class="grid grid-rows-4 grid-flow-col gap-5 max-w-3xl">
+        <div class="card">
+          <div class="card-header">Your account: <span><h2>{{author}}</h2></span></div>
+          <div class="card-body">
+            <div id="githubcontainer">
+              <h2 class="card-title">GitHub</h2>
+              <p class="card-text">{{author.github}}</p>
+              <a href="github_activity">View Github Activity</a>
+            </div>
+          </div>
+          {% if author == request.user %}
+          <div class="card-footer text-muted">
+            <a href="{% url 'edit_profile' request.user.id2 %}" class="btn btn-secondary btn-sm">Edit your profile</a>
+          </div>
+          {% endif %}
+        </div>
+        <div class="card">
+          <div class="card-header"><h3>My friends</h3></div>
+          <div class="card-body">
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th scope="col">Friend Username</th>
+                  <th scope="col">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for friend in friends %}
+                <tr>
+                  <td>{{friend.username}}</td>
+                  <td>
+                    <a href="{% url 'get_author' friend.id2 %}" class="">View Profile</a>
+                    <a href="{% url 'unbefriend_author' friend.id2 %}" class="">Unfriend</a>
+                </tr>
+                {% empty %}
+                <h5>No friends</h5>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          <div class="card-footer">
+            <small class="text-muted">End of List</small>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header"><h3>Currently Following</h3></div>
+          <div class="card-body">
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th scope="col">Following</th>
+                  <th scope="col">Actions</th>
+                </tr>
+              </thead>
+              {% for author in following %}
+              <tr>
+                <td>{{author.username}}</td>
+                <td>
+                  <a href="{% url 'get_author' author.id2 %}" class="">View Profile</a>
+                  <a href="{% url 'unfollow_author' author.id2 %}" class="">Unfollow</a>
+              </tr>
+              {% empty %}
+              <h5>Following no Authors</h5>
+              {% endfor %}
+            </table>
+          </div>
+          <div class="card-footer">
+            <small class="text-muted">End of List</small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
