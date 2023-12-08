@@ -44,7 +44,9 @@
                   <td>{{friend.username}}</td>
                   <td>
                     <a href="{% url 'get_author' friend.id2 %}" class="">View Profile</a>
-                    <a href="{% url 'unbefriend_author' friend.id2 %}" class="">Unfriend</a>
+                    {% if author == request.user %}
+                      <a href="{% url 'unbefriend_author' friend.id2 %}" class="">Unfriend</a>
+                    {% endif %}
                 </tr>
                 {% empty %}
                 <h5>No friends</h5>
@@ -72,7 +74,9 @@
                 <td>{{author.username}}</td>
                 <td>
                   <a href="{% url 'get_author' author.id2 %}" class="">View Profile</a>
-                  <a href="{% url 'unfollow_author' author.id2 %}" class="">Unfollow</a>
+                  {% if author == request.user %}
+                    <a href="{% url 'unfollow_author' author.id2 %}" class="">Unfollow</a>
+                  {% endif %}
               </tr>
               {% empty %}
               <h5>Following no Authors</h5>

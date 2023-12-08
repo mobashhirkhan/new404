@@ -9,97 +9,101 @@
     {%bootstrap_javascript %} {% load static %}
     <link rel="shortcut icon" type="image/x-icon" href="{% static 'favicon.ico' %}" >
   </head>
-  <body class="" style="background-image: linear-gradient(to right bottom,rgba(250, 172, 172, 0.8), rgba(84, 180, 177, 0.88), rgba(253, 228, 160, 0.88)); background-attachment:fixed">
+  <body class="" style="background-image: linear-gradient(to right bottom,rgba(251, 222, 222, 0.8), rgba(217, 245, 244, 0.88), rgba(249, 241, 217, 0.88)); background-attachment:fixed">
     {% include "navbar.html" %}
-    <div class="flex items-center justify-center h-full mt-4 mb-4">
-      <div
-        class="max-w-3xl w-full p-4 bg-white rounded-lg shadow-md flex-shrink-0"
-      >
-        <a
-          href="{% url 'stream' %}"
-          class="text-blue-500 hover:underline mb-4 inline-block"
-          >Back to stream</a
+    <div class="flex items-center justify-center h-full mt-4 mx-0 my-0">
+        <div
+          class="max-w-3xl card w-full p-4 bg-white rounded-lg shadow-md flex-shrink-0"
         >
-        <h1 class="text-2xl font-bold">
-          Post title: {{ thispost.title }} made by {{thispost.author.username}}
-        </h1>
-        <h5 class="text-sm text-gray-600 mb-4">{{ thispost.description }}</h5>
-        <a href="{% url 'post_like' thispost.id2 %}">Like post</a>
-        <span class="ml-2 text-gray-600">{{ thispost.liked.count }}</span>
-        {% if thispost.contentType|lower == 'image/png;base64' or thispost.contentType|lower == 'image/jpeg;base64' %}
-        <img
-          src="{{ thispost.image.url }}"
-          class="mt-4"
-          width="300"
-          height="300"
-        />
-        {% elif thispost.contentType|lower == 'hyperlink' %}
+        <div class="card-header">
+          <a
+            href="{% url 'stream' %}"
+            class="text-blue-500 hover:underline mb-2 inline-block"
+            >Back to stream</a
+            >
+            <h1 class="text-2xl font-bold">
+              Post title: {{ thispost.title }} made by {{thispost.author.username}}
+            </h1>
+            <a href="{% url 'post_like' thispost.id2 %}" class="btn btn-secondary">Like post<span class="ml-2 text-gray-600 badge badge-success">{{ thispost.liked.count }}</span></a>
+        </div>
+        <div class="card-body">
+          <h4 class="mb-2">Description:</h4>
+          <p>{{ thispost.description }}</p>
+          <hr>
+          <div id="visibility"><h4>Visibility:</h4><span><strong>({{ thispost.visibility|lower }})</strong></span></div>
+          <hr>
+          {% if thispost.contentType|lower == 'image/png;base64' or thispost.contentType|lower == 'image/jpeg;base64' %}
+          <h4>Content (an image)</h4>
+          <img
+            src="{{ thispost.image.url }}"
+            class="mt-4"
+            width="300"
+            height="300"
+          />
+          {% elif thispost.contentType|lower == 'hyperlink' %}
+
+
         <script>
           var val = "{{thispost.content}}";
           let loc = val;
           document.write('<a href="' + loc + '"> your image </a>');
         </script>
-    <!-- {% elif thispost.contentType|lower == 'image/png;base64' or
-    thispost.contentType|lower == 'image/jpeg;base64' %}
-    <img src="{{thispost.content}}" class="mt-4" width="300" height="300" /> -->
 
-    {% else %} {% if thispost.contentType|lower == 'markdown' %}
-    <div class="mt-4 markdown-style">
-      <!-- markdown post -->
-      {{ thispost.contentMarkdown|safe }}
-    </div>
-    {% elif thispost.contentType|lower == 'plain' %}
-    <div class="mt-4 plain-post-style">
-      <!-- plain post -->
-      {{ thispost.contentPlain|safe }}
-    </div>
-    {% endif %} {% endif %}
-
-    <ul class="mt-4">
-      <li>{{ thispost.visibility }}</li>
-    </ul>
-
-    <h2 class="text-lg font-semibold mt-6">Comments</h2>
-    {% if comments %}
-    <ul class="list-disc ml-6 mt-4">
+        {% else %} {% if thispost.contentType|lower == 'markdown' %}
+        <h4>Content (markdown)</h4>
+        <div class="mt-4 markdown-style">
+          <!-- markdown post -->
+          {{ thispost.contentMarkdown|safe }}
+        </div>
+        {% elif thispost.contentType|lower == 'plain' %}
+        <h4 id="contentWarning">Content</h4>
+        <div class="mt-2 plain-post-style">
+          {{ thispost.contentPlain|safe }}
+        </div>
+      {% endif %} {% endif %}
+      </div>
+      <div class="card-footer">
+      <h4>Comments</h4>
+      <hr>
+      {% if comments %}
         {% for comment in comments %}
-        <br>
-            <li class="">
-                <div>
-                    {% if comment.contentType|lower == 'plain' %}
-                        <p class="text-base">{{ comment.contentPlain|safe }}</p>
-                    {% elif comment.contentType|lower == 'markdown' %}
-                        <p class="text-base">{{ comment.contentMarkdown|safe }}</p>
-                    {% endif %}
-                    <p class="text-sm text-gray-500">By {{ comment.author.username }}</p>
-                    <a href="{% url 'comment_like' thispost.id2 comment.id2 %}" class="text-blue-500 hover:underline">Like</a>
-                    <span class="ml-2 text-gray-600">{{ comment.liked.count }}</span>
-
-                    {% if comment.author == request.user %}
-                        <div class="mt-2">
-                            <a href="{% url 'comment_edit' thispost.id2 comment.id2 %}" class="text-green-500 mr-4 hover:underline">Edit</a>
-                            <a href="{% url 'comment_delete' thispost.id2 comment.id2 %}" class="text-red-500 hover:underline">Delete</a>
-                        </div>
-                    {% endif %}
-                </div>
-            </li>
+        {% if comment.author == request.user and thispost.visibility == 'FRIENDS' %}
+          <div class="card max-w-4xl mt-2 w-full">
+            <div class="card-header">
+              <h5>Commented by <strong>{{ comment.author.username }}</strong> on {{ comment.published }}</h5>
+            </div>
+            <div class="card-body">
+              {% if comment.contentType|lower == 'plain' %}
+                <p>{{ comment.contentPlain|safe }}</p>
+              {% elif comment.contentType|lower == 'markdown' %}
+                  <p>{{ comment.contentMarkdown|safe }}</p>
+              {% endif %}
+            </div>
+            <div class="card-footer">
+                <a href="{% url 'comment_edit' thispost.id2 comment.id2 %}" class="btn btn-primary">Edit</a>
+                <a href="{% url 'comment_delete' thispost.id2 comment.id2 %}" class="btn btn-danger">Delete</a>
+                <a href="{% url 'comment_like' thispost.id2 comment.id2 %}" class="btn btn-primary text-blue-500">Like<span class="badge badge-light">{{ comment.liked.count }}</span></a>
+            </div>
+          </div>
+        {% endif %}
         {% endfor %}
-    </ul>
-    {% else %}
-    <p>No comments yet.</p>
-    {% endif %} {% if not form %}
-    <a href="{% url 'comment_display' thispost.id2 %}">Write a comment</a>
-    {% else %}
-    <form action="" method="POST">
-      {% csrf_token %} {% bootstrap_form form %}
-      <input
-              type="submit"
-              value="Post the Comment"
-              class="bg-blue-500 text-white px-4 py-2 rounded-md mt-4 block w-full"
-      />
-    </form>
-    {% endif %}
+        {% else %}
+        <p>No comments yet.</p>
+        {% endif %} {% if not form %}
+        <a href="{% url 'comment_display' thispost.id2 %}" class="btn btn-success w-full mt-4">Write a comment</a>
+        {% else %}
+        <form action="" method="POST">
+          {% csrf_token %} {% bootstrap_form form %}
+          <input
+            type="submit"
+            value="Post the Comment"
+            class="bg-blue-500 text-white px-4 py-2 rounded-md mt-4 block w-full"
+          />
+        </form>
+        {% endif %}
+        </div>
+      </div>
+    </div>
   </div>
-</div>
-</body>
-</html>
+  </body>
+</html> 

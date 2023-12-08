@@ -36,7 +36,7 @@
                 <div class="card text-left mb-4 mt-4" id="cardContainer">
                   <div class="card-header">
                     <div class="font-bold text-2xl">{{ post.title }}</div>
-                    <span class="ml-2 text-gray-600">Like count: {{ post.liked.count }}</span>
+                    <a href="{% url 'post_like' post.id2 %}" class="btn btn-success mt-2">Like post<span class="ml-2 text-gray-600 badge badge-success">{{ post.liked.count }}</span></a>
                     <div class="">
                       {% if post.author == request.user %}
                       <a href="{% url 'edit_post' post.id2 %}" class="text-blue-500"
@@ -107,12 +107,11 @@
                         </div>
                       </div>
                       {% endfor %}
-
+                      
                     </div>
-                    <a href="{% url 'comment_display' post.id2 %}">Write a comment</a>
-                    <a href="{% url 'post_like' post.id2 %}">Like post</a>
+                    <a href="{% url 'comment_display' post.id2 %}" class="btn btn-success w-full">Write a comment</a>
                   </div>
-
+                  
                   <!-- add a textbox to add a comment for a post here -->
                 </div>
                 {% endfor %} {% if latest_stream|length == 0 %}
@@ -267,5 +266,3 @@
         </div>  
   </body>
 </html>
-
-<!-- Modal -->

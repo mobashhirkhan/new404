@@ -61,23 +61,28 @@
     var ourCredentials = "Nodenet:Nodenet";
     var base64OurCredentials = btoa(ourCredentials);
 
+    /*
     var credentials = "node-scripted-team:node-scripted-team";
-    var base64Credentials = btoa(credentials);
+    */
+    var base64Credentials = base64OurCredentials;
+
 
     function buttonFunction() {
         var xhr = new XMLHttpRequest();
         //var url = "https://netninjas-backend-181348e5439b.herokuapp.com/api/authors";
-        var url = "127.0.0.1:8000/api/authors"
+        // var url = "127.0.0.1:8000/api/authors"
+        var url = "https://node-net-46d70235bc29.herokuapp.com/api/authors"
 
         xhr.onreadystatechange = function () {
             if (this.readyState == 4 && this.status == 200) {
                 var authors = JSON.parse(this.responseText);
-                //console.log(authors.items);
+                console.log(authors.items);
                 displayAuthors(authors.items);
             }
         };
         xhr.open("GET", url, true);
         xhr.setRequestHeader("Authorization", "Basic " + base64Credentials);
+        xhr.setRequestHeader("Accept", "application/json");
         xhr.send();
     }
 
@@ -99,7 +104,7 @@
         usernameCell.style.borderRight = "1px solid #dee2e6"; // Add right border
 
         var username = document.createElement("div");
-        username.textContent = author.username;
+        username.textContent = author.displayName;
         usernameCell.appendChild(username);
 
         var emptyCell = document.createElement("td"); // Empty column
@@ -148,20 +153,22 @@
     }
     async function sendRequest(toAuthor) {
       try {
-          //var fromAuthor = currentAuthor();
+          var fromAuthor = currentAuthor();
+          /*
           var fromAuthor = {
             "type":"author",
             "id":"test"
 
           };
+          */
 
           var theirCredentials = "Nodenet:Nodenet";
           var ourCredentials = "Nodenet:Nodenet";
 
 
           // URL for sending follow request to inboxes
-          var theirUrl = `${toAuthor.id}/inbox`;
-          var ourUrl = `${fromAuthor.id}/inbox`;
+          var theirUrl = `${toAuthor.id}/inbox/`;
+          var ourUrl = `${fromAuthor.id}/inbox/`;
 
 
           var follow = {
@@ -176,9 +183,7 @@
           console.log(theirUrl);
 
           await sendFollowRequest(ourUrl, ourCredentials, follow); // to us
-          await sendFollowRequest(ourUrl, ourCredentials, follow); //
-
-          //await sendFollowRequest(theirUrl, theirCredentials, follow); // to them
+          await sendFollowRequest(theirUrl, theirCredentials, follow); // to them
 
           console.log("Both follow requests sent successfully");
       } catch (error) {
@@ -187,6 +192,7 @@
     }
 
     async function sendFollowRequest(url, cred, follow) {
+      console.log("entered foloowe");
       try {
           const response = await fetch(url, {
               method: 'POST',

@@ -88,7 +88,6 @@ def registerAuthor(request):
 
 
 # also add to an inbox as a friend request item
-# TODO: I think this sendRequest is not saved in the database
 @login_required(login_url="login")  # restrict access to loggedin users
 def sendRequest(request, author_id):
     fromAuthor = request.user
@@ -405,7 +404,7 @@ def stream(request):
     """Stream of posts"""
     latest_stream = (
         AppPost.objects.order_by("-published")
-        .filter(visibility="PUBLIC")[:15]
+        .filter(visibility="PUBLIC", unlisted=False)[:15]
         .select_related("author")
         .prefetch_related(
             Prefetch(
@@ -725,7 +724,7 @@ def like_post(request, post_id):
             inbox.save()
         post_instance.liked.add(like)
         post_instance.save()
-        return redirect("stream")
+        return redirect("get_post", post_id)
     else:
         return render(request, "base/already_liked.html", {"post_id": post_id})
 
