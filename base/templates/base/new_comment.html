@@ -1,18 +1,14 @@
-{% load static tailwind_tags %}
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Create Comment</title>
-    {% tailwind_css %} {% load bootstrap5 %} {% bootstrap_css %}
-    {%bootstrap_javascript %} {% load static %}
     <link rel="shortcut icon" type="image/x-icon" href="{% static 'favicon.ico' %}" >
   </head>
   <body class="flex justify-center items-center h-screen" style="background-image: linear-gradient(to right bottom,rgba(250, 172, 172, 0.8), rgba(84, 180, 177, 0.88), rgba(253, 228, 160, 0.88))">
     <!-- <form action="{% url 'get_post' post_id %} /" method="POST"> -->
     <form action="" method="POST">
-      {% csrf_token %} {% bootstrap_form form %}
       <input
         type="submit"
         value="Post the Comment"

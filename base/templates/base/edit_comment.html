@@ -1,17 +1,13 @@
-{% load static tailwind_tags %}
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Update Comment</title>
-    {% tailwind_css %} {% load bootstrap5 %} {% bootstrap_css %}
-    {%bootstrap_javascript %} {% load static %}
     <link rel="shortcut icon" type="image/x-icon" href="{% static 'favicon.ico' %}" >
   </head>
   <body class="flex justify-center items-center h-screen">
     <form action="" method="POST">
-      {% csrf_token %} {% bootstrap_form form %}
       <input
         type="submit"
         value="Update the Comment"
