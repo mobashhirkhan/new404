@@ -24,7 +24,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 
-baseURL_host = "node-net-46d70235bc29.herokuapp.com"
+baseURL_host = "connection-net-e444016a9ef0.herokuapp.com"
 baseURL = f"https://{baseURL_host}/api"
 
 
