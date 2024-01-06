@@ -1,5 +1,5 @@
 # NodeNet - By Team Scripted
-** Note: This is a copy of the original repo of the project since the CMPUT404 organization deleted the original. **
+**Note: This is a copy of the original repo of the project since the CMPUT404 organization deleted the original.**\
 Welcome to NodeNet! This web application allows users to sign up, log in, post images, and make friends. 
 It provides a platform for users to connect and share moments with their friends and followers.
 This project was a part of CMPUT 404: Web Applications and Architecture and was based on Social Distribution. 
