@@ -1,4 +1,5 @@
-# CMPUT404-project-socialdistribution
+# NodeNet
+## By Team Scripted
 
 Welcome to NodeNet! This web application allows users to sign up, log in, post images, and make friends. 
 It provides a platform for users to connect and share moments with their friends and followers.
